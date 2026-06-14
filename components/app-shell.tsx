@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Home, GraduationCap, ClipboardList, NotebookPen, Search, Flame, ChevronUp } from "lucide-react"
+import { Home, BookOpen, CheckSquare, FileText, Search, Flame, BarChart2 } from "lucide-react"
 import { HomeScreen } from "@/components/screens/home-screen"
 import { ClassesScreen } from "@/components/screens/classes-screen"
 import { TestsScreen } from "@/components/screens/tests-screen"
@@ -10,17 +10,22 @@ import { DesktopHomeScreen } from "@/components/desktop/home-screen"
 import { DesktopClassesScreen } from "@/components/desktop/classes-screen"
 import { DesktopTestsScreen } from "@/components/desktop/tests-screen"
 import { DesktopNotesScreen } from "@/components/desktop/notes-screen"
+import { DesktopDashboardScreen } from "@/components/desktop/dashboard-screen"
 import { Sidebar } from "@/components/desktop/sidebar"
 import { streakCount } from "@/lib/study-data"
 
-type Tab = "home" | "classes" | "tests" | "notes"
+type Tab = "home" | "classes" | "tests" | "notes" | "dashboard"
 
 const tabs: { key: Tab; label: string; icon: typeof Home }[] = [
   { key: "home", label: "Home", icon: Home },
-  { key: "classes", label: "Classes", icon: GraduationCap },
-  { key: "tests", label: "Tests", icon: ClipboardList },
-  { key: "notes", label: "Notes", icon: NotebookPen },
+  { key: "classes", label: "Classes", icon: BookOpen },
+  { key: "tests", label: "Tests", icon: CheckSquare },
+  { key: "notes", label: "Notes", icon: FileText },
+  { key: "dashboard", label: "Dashboard", icon: BarChart2 },
 ]
+
+// Mobile tabs only (no Dashboard on mobile)
+const mobileTabs = tabs.slice(0, 4)
 
 export function AppShell() {
   const [tab, setTab] = useState<Tab>("home")
@@ -41,7 +46,7 @@ export function AppShell() {
     if (!isDesktop) return
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      const tabKeys: Tab[] = ["home", "classes", "tests", "notes"]
+      const tabKeys: Tab[] = ["home", "classes", "tests", "notes", "dashboard"]
       const currentIndex = tabKeys.indexOf(tab)
 
       if (e.key === "ArrowRight" && currentIndex < tabKeys.length - 1) {
@@ -113,6 +118,7 @@ export function AppShell() {
                     {tab === "classes" && <DesktopClassesScreen />}
                     {tab === "tests" && <DesktopTestsScreen />}
                     {tab === "notes" && <DesktopNotesScreen />}
+                    {tab === "dashboard" && <DesktopDashboardScreen />}
                   </>
                 )}
               </div>
@@ -180,7 +186,7 @@ export function AppShell() {
 
       {/* Bottom tabs */}
       <nav className="sticky bottom-0 z-40 mx-auto flex h-16 w-full max-w-md items-center justify-around border-t border-[var(--border)] bg-[var(--bg)]/85 backdrop-blur-xl">
-        {tabs.map(({ key, label, icon: Icon }) => {
+        {mobileTabs.map(({ key, label, icon: Icon }) => {
           const isActive = tab === key
           return (
             <button

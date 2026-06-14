@@ -1,129 +1,118 @@
 "use client"
 
-import { useState } from "react"
-import { Check, X, Target, Timer, FileCheck2 } from "lucide-react"
-import { tests, testFilters, testHistory, performance, subjectColors, type TestType } from "@/lib/study-data"
-import { Card, FilterPills, SectionHeader } from "@/components/ui-bits"
+import { testHistory, performance } from "@/lib/study-data"
+
+const availableTests = [
+  {
+    abbr: "PH",
+    subject: "Physics",
+    due: "Due Today",
+    title: "Quantum Mechanics Mid-Term",
+    detail: "50 questions · 90 minutes · Difficulty: Hard",
+    subjectColor: "#3b82f6",
+    dueColor: "#ef4444",
+    iconBg: "rgba(59,130,246,0.12)",
+  },
+  {
+    abbr: "MA",
+    subject: "Math",
+    due: "Due Tomorrow",
+    title: "Integration Techniques Quiz",
+    detail: "25 questions · 45 minutes · Difficulty: Medium",
+    subjectColor: "#22c55e",
+    dueColor: "#eab308",
+    iconBg: "rgba(34,197,94,0.12)",
+  },
+  {
+    abbr: "CH",
+    subject: "Chemistry",
+    due: "Due in 3 days",
+    title: "Organic Chemistry Final",
+    detail: "75 questions · 120 minutes · Difficulty: Hard",
+    subjectColor: "#a855f7",
+    dueColor: "#22c55e",
+    iconBg: "rgba(168,85,247,0.12)",
+  },
+]
 
 export function DesktopTestsScreen() {
-  const [filter, setFilter] = useState<"All" | TestType>("All")
-
-  const filtered = filter === "All" ? tests : tests.filter((t) => t.type === filter)
-
   return (
     <div className="bento-grid">
-      {/* Filter pills - span 12 cols x 1 row */}
-      <div className="w-full">
-        <FilterPills items={testFilters} active={filter} onChange={setFilter} />
-      </div>
 
-      {/* Test list - span 8 cols x 2 rows */}
-      <Card className="w-wide overflow-hidden p-4" delay={0}>
-        <SectionHeader title="Available Tests" />
-        <div className="grid grid-cols-2 gap-3">
-          {filtered.map((test, i) => (
-            <Card key={test.id} delay={i * 50} className="flex flex-col overflow-hidden p-0">
-              <div className="h-1 w-full" style={{ background: subjectColors[test.subject] }} />
-              <div className="flex flex-1 flex-col gap-2 p-3.5">
-                <span
-                  className="w-fit rounded-md px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide"
-                  style={{
-                    color: subjectColors[test.subject],
-                    background: `${subjectColors[test.subject]}1f`,
-                  }}
-                >
-                  {test.type}
+      {/* Available Tests — span 8 x 3 rows (hero) */}
+      <div className="widget w-hero">
+        <div className="widget-header">
+          <span className="widget-title">Available Tests</span>
+          <span className="widget-action">3 pending</span>
+        </div>
+        {availableTests.map((t) => (
+          <div key={t.abbr} className="test-item">
+            <div className="test-icon" style={{ background: t.iconBg }}>{t.abbr}</div>
+            <div className="test-info">
+              <div style={{ display: "flex", gap: "5px", marginBottom: "3px" }}>
+                <span className="test-tag" style={{ color: t.subjectColor, borderColor: `${t.subjectColor}4d` }}>
+                  {t.subject}
                 </span>
-                <p className="text-[14px] font-semibold leading-snug text-[var(--text)]">{test.title}</p>
-                <p className="text-[11px] text-[var(--text-2)]">
-                  {test.questions} Qs &middot; {test.duration}
-                </p>
-                <div className="mt-auto pt-2">
-                  {test.score === null ? (
-                    <button className="pressable w-full rounded-full bg-[var(--brand)] py-2 text-[12px] font-semibold text-white">
-                      Start
-                    </button>
-                  ) : (
-                    <span className="flex w-full items-center justify-center gap-1 rounded-full border border-[var(--success)]/30 bg-[var(--success)]/12 py-2 text-[12px] font-semibold text-[var(--success)]">
-                      <Check size={13} /> {test.score}%
-                    </span>
-                  )}
-                </div>
+                <span className="test-tag" style={{ color: t.dueColor, borderColor: `${t.dueColor}4d` }}>
+                  {t.due}
+                </span>
               </div>
-            </Card>
-          ))}
-        </div>
-      </Card>
-
-      {/* Performance stats sidebar - span 4 cols x 2 rows */}
-      <Card className="w-medium p-4" delay={100}>
-        <SectionHeader title="Your Stats" />
-        <div className="flex flex-col gap-4">
-          <PerfStat icon={<Target size={18} />} value={`${performance.avgScore}%`} label="Avg Score" color="var(--success)" />
-          <PerfStat icon={<Timer size={18} />} value={performance.avgTime} label="Avg Time" color="var(--info)" />
-          <PerfStat icon={<FileCheck2 size={18} />} value={performance.testsTaken} label="Tests Taken" color="var(--brand)" />
-        </div>
-      </Card>
-
-      {/* Test history - span 6 cols x 2 rows */}
-      <Card className="w-half p-4" delay={200}>
-        <SectionHeader title="Test History" />
-        <div className="flex flex-col gap-1.5">
-          {testHistory.slice(0, 5).map((row) => (
-            <div key={row.id} className="flex items-center gap-3 rounded-xl px-1 py-2">
-              <span
-                className="flex h-7 w-7 items-center justify-center rounded-lg"
-                style={{
-                  background: row.passed ? "rgba(34,197,94,0.14)" : "rgba(239,68,68,0.14)",
-                  color: row.passed ? "var(--success)" : "#ef4444",
-                }}
-              >
-                {row.passed ? <Check size={14} /> : <X size={14} />}
-              </span>
-              <span className="flex-1 truncate text-[13px] font-medium text-[var(--text)]">{row.name}</span>
-              <span
-                className="text-[13px] font-semibold"
-                style={{ color: row.passed ? "var(--success)" : "#ef4444" }}
-              >
-                {row.score}%
-              </span>
+              <div className="test-title">{t.title}</div>
+              <div className="test-detail">{t.detail}</div>
             </div>
-          ))}
-        </div>
-      </Card>
-
-      {/* Performance chart - span 6 cols x 2 rows */}
-      <Card className="w-half p-4" delay={300}>
-        <SectionHeader title="Score Trend" />
-        <div className="flex items-flex-end justify-between gap-2 h-24 mt-4">
-          {[65, 72, 68, 75, 80, 78].map((score, i) => (
-            <div key={i} className="flex flex-1 flex-col items-center gap-2">
-              <div className="flex h-16 w-full items-end rounded-md bg-white/5">
-                <div
-                  className="w-full rounded-t-md transition-all"
-                  style={{
-                    height: `${score}%`,
-                    background: "var(--brand)",
-                  }}
-                />
-              </div>
-              <span className="text-[9px] font-medium text-[var(--text-2)]">W{i + 1}</span>
-            </div>
-          ))}
-        </div>
-      </Card>
-    </div>
-  )
-}
-
-function PerfStat({ icon, value, label, color }: { icon: React.ReactNode; value: string; label: string; color: string }) {
-  return (
-    <div className="flex flex-col gap-2 p-3 bg-white/3 rounded-lg">
-      <div className="flex items-center gap-2" style={{ color }}>
-        {icon}
-        <span className="text-[10px] font-medium uppercase">{label}</span>
+            <button className="test-btn">Start</button>
+          </div>
+        ))}
       </div>
-      <p className="text-[24px] font-bold text-[var(--text)]">{value}</p>
+
+      {/* Test History — span 4 x 2 rows */}
+      <div className="widget w-medium">
+        <div className="widget-header">
+          <span className="widget-title">Test History</span>
+        </div>
+        <div className="lb-list">
+          {testHistory.map((row) => (
+            <div key={row.id} className="lb-row">
+              <div className="lb-rank" style={{ color: row.passed ? "#22c55e" : "#ef4444" }}>
+                {row.passed ? "OK" : "XX"}
+              </div>
+              <div className="lb-name">{row.name}</div>
+              <div className="lb-score" style={{ color: row.passed ? "#22c55e" : "#ef4444" }}>
+                {row.score}%
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Performance — span 4 x 2 rows */}
+      <div className="widget w-medium">
+        <div className="widget-header">
+          <span className="widget-title">Performance</span>
+        </div>
+        <div className="widget-stat" style={{ padding: "10px 0" }}>
+          <div className="stat-icon-box" style={{ background: "rgba(34,197,94,0.12)", color: "#22c55e" }}>AV</div>
+          <div>
+            <div className="stat-value" style={{ color: "#22c55e" }}>{performance.avgScore}%</div>
+            <div className="stat-label">Average Score</div>
+          </div>
+        </div>
+        <div className="widget-stat" style={{ padding: "10px 0" }}>
+          <div className="stat-icon-box" style={{ background: "rgba(59,130,246,0.12)", color: "#3b82f6" }}>AT</div>
+          <div>
+            <div className="stat-value" style={{ color: "#3b82f6" }}>{performance.avgTime}</div>
+            <div className="stat-label">Avg. Time</div>
+          </div>
+        </div>
+        <div className="widget-stat" style={{ padding: "10px 0" }}>
+          <div className="stat-icon-box" style={{ background: "rgba(249,115,22,0.12)", color: "var(--brand)" }}>TK</div>
+          <div>
+            <div className="stat-value" style={{ color: "var(--brand)" }}>{performance.testsTaken}</div>
+            <div className="stat-label">Tests Taken</div>
+          </div>
+        </div>
+      </div>
+
     </div>
   )
 }
