@@ -1,31 +1,147 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Home, GraduationCap, ClipboardList, NotebookPen, Search, Flame } from "lucide-react"
+import { Home, BookOpen, CheckSquare, FileText, Search, Flame, BarChart2 } from "lucide-react"
 import { HomeScreen } from "@/components/screens/home-screen"
 import { ClassesScreen } from "@/components/screens/classes-screen"
 import { TestsScreen } from "@/components/screens/tests-screen"
 import { NotesScreen } from "@/components/screens/notes-screen"
+import { DesktopHomeScreen } from "@/components/desktop/home-screen"
+import { DesktopClassesScreen } from "@/components/desktop/classes-screen"
+import { DesktopTestsScreen } from "@/components/desktop/tests-screen"
+import { DesktopNotesScreen } from "@/components/desktop/notes-screen"
+import { DesktopDashboardScreen } from "@/components/desktop/dashboard-screen"
+import { Sidebar } from "@/components/desktop/sidebar"
 import { streakCount } from "@/lib/study-data"
 
-type Tab = "home" | "classes" | "tests" | "notes"
+type Tab = "home" | "classes" | "tests" | "notes" | "dashboard"
 
 const tabs: { key: Tab; label: string; icon: typeof Home }[] = [
   { key: "home", label: "Home", icon: Home },
-  { key: "classes", label: "Classes", icon: GraduationCap },
-  { key: "tests", label: "Tests", icon: ClipboardList },
-  { key: "notes", label: "Notes", icon: NotebookPen },
+  { key: "classes", label: "Classes", icon: BookOpen },
+  { key: "tests", label: "Tests", icon: CheckSquare },
+  { key: "notes", label: "Notes", icon: FileText },
+  { key: "dashboard", label: "Dashboard", icon: BarChart2 },
 ]
+
+// Mobile tabs only (no Dashboard on mobile)
+const mobileTabs = tabs.slice(0, 4)
 
 export function AppShell() {
   const [tab, setTab] = useState<Tab>("home")
   const [loading, setLoading] = useState(true)
+  const [isDesktop, setIsDesktop] = useState(false)
+  const [scrollPosition, setScrollPosition] = useState(0)
 
+  // Check if desktop on mount and window resize
+  useEffect(() => {
+    const checkDesktop = () => setIsDesktop(window.innerWidth >= 1024)
+    checkDesktop()
+    window.addEventListener("resize", checkDesktop)
+    return () => window.removeEventListener("resize", checkDesktop)
+  }, [])
+
+  // Keyboard navigation for desktop
+  useEffect(() => {
+    if (!isDesktop) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tabKeys: Tab[] = ["home", "classes", "tests", "notes", "dashboard"]
+      const currentIndex = tabKeys.indexOf(tab)
+
+      if (e.key === "ArrowRight" && currentIndex < tabKeys.length - 1) {
+        setTab(tabKeys[currentIndex + 1])
+      } else if (e.key === "ArrowLeft" && currentIndex > 0) {
+        setTab(tabKeys[currentIndex - 1])
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [tab, isDesktop])
+
+  // Scroll position for desktop
+  useEffect(() => {
+    if (!isDesktop) return
+
+    const handleScroll = () => {
+      setScrollPosition(window.scrollY)
+    }
+
+    const scrollContainer = document.querySelector(".desktop-pages")
+    if (scrollContainer) {
+      scrollContainer.addEventListener("scroll", handleScroll)
+      return () => scrollContainer.removeEventListener("scroll", handleScroll)
+    }
+  }, [isDesktop])
+
+  // Loading effect
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 1500)
     return () => clearTimeout(t)
   }, [])
 
+  // Desktop layout
+  if (isDesktop) {
+    return (
+      <div className="relative flex h-screen bg-[var(--bg)]">
+        <div className="ambient-glow" />
+
+        <Sidebar currentPage={tab} onPageChange={setTab} />
+
+        <div className="desktop-content">
+          {/* Desktop top nav */}
+          <header className="desktop-topnav">
+            <div className="nav-pills">
+              {tabs.map(({ key, label, icon: Icon }) => (
+                <button
+                  key={key}
+                  onClick={() => setTab(key)}
+                  className={`nav-pill ${key === tab ? "active" : ""}`}
+                >
+                  <Icon size={16} />
+                  {label}
+                </button>
+              ))}
+            </div>
+          </header>
+
+          {/* Desktop content pages */}
+          <div className="desktop-pages" key={tab}>
+            <div className="page-section visible">
+              <div className="px-6 py-4">
+                {loading ? (
+                  <DesktopLoadingSkeleton />
+                ) : (
+                  <>
+                    {tab === "home" && <DesktopHomeScreen />}
+                    {tab === "classes" && <DesktopClassesScreen />}
+                    {tab === "tests" && <DesktopTestsScreen />}
+                    {tab === "notes" && <DesktopNotesScreen />}
+                    {tab === "dashboard" && <DesktopDashboardScreen />}
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Scroll indicator dots */}
+          <div className="scroll-indicator">
+            {tabs.map(({ key }, i) => (
+              <button
+                key={i}
+                onClick={() => setTab(key)}
+                className={`scroll-dot ${key === tab ? "active" : ""}`}
+                aria-label={`Go to ${key}`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Mobile layout
   return (
     <div className="relative mx-auto flex min-h-screen max-w-md flex-col">
       <div className="ambient-glow" />
@@ -70,7 +186,7 @@ export function AppShell() {
 
       {/* Bottom tabs */}
       <nav className="sticky bottom-0 z-40 mx-auto flex h-16 w-full max-w-md items-center justify-around border-t border-[var(--border)] bg-[var(--bg)]/85 backdrop-blur-xl">
-        {tabs.map(({ key, label, icon: Icon }) => {
+        {mobileTabs.map(({ key, label, icon: Icon }) => {
           const isActive = tab === key
           return (
             <button
@@ -93,6 +209,20 @@ export function AppShell() {
           )
         })}
       </nav>
+    </div>
+  )
+}
+
+function DesktopLoadingSkeleton() {
+  return (
+    <div className="bento-grid">
+      <div className="w-hero skeleton rounded-[20px]" />
+      {[...Array(3)].map((_, i) => (
+        <div key={i} className="w-micro skeleton rounded-[20px]" />
+      ))}
+      {[...Array(4)].map((_, i) => (
+        <div key={i} className="w-quarter skeleton rounded-[20px]" />
+      ))}
     </div>
   )
 }
