@@ -4,31 +4,38 @@ import { useRouter, usePathname } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 
 const tabs = [
-  { key: 'home', label: 'Home', path: '/' },
-  { key: 'classes', label: 'Classes', path: '/classes' },
-  { key: 'tests', label: 'Tests', path: '/tests' },
-  { key: 'notes', label: 'Notes', path: '/notes' },
+  { key: 'home',      label: 'Home',      path: '/'          },
+  { key: 'classes',   label: 'Classes',   path: '/classes'   },
+  { key: 'tests',     label: 'Tests',     path: '/tests'     },
+  { key: 'notes',     label: 'Notes',     path: '/notes'     },
   { key: 'dashboard', label: 'Dashboard', path: '/dashboard' },
 ];
 
 export function TopNav() {
-  const router = useRouter();
+  const router   = useRouter();
   const pathname = usePathname();
 
   return (
-    <View style={styles.container}>
+    <View style={styles.bar}>
       <View style={styles.inner}>
-        <Text style={styles.logo}>PW Client</Text>
+
+        {/* Logo */}
+        <View style={styles.logoWrap}>
+          <View style={styles.logoMark} />
+          <Text style={styles.logoText}>PW Client</Text>
+        </View>
+
+        {/* Pills */}
         <View style={styles.pills}>
           {tabs.map((tab) => {
             const isActive =
               pathname === tab.path ||
-              (tab.path !== '/' && pathname.startsWith(tab.path + '/'));
+              (tab.path !== '/' && pathname.startsWith(tab.path));
             return (
               <TouchableOpacity
                 key={tab.key}
                 onPress={() => router.push(tab.path as any)}
-                activeOpacity={0.7}
+                activeOpacity={0.75}
                 style={[styles.pill, isActive && styles.activePill]}
               >
                 <Text style={[styles.pillText, isActive && styles.activePillText]}>
@@ -38,20 +45,23 @@ export function TopNav() {
             );
           })}
         </View>
-        <View style={styles.profile}>
+
+        {/* Avatar */}
+        <View style={styles.avatarWrap}>
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>JD</Text>
           </View>
         </View>
+
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    height: 64,
-    backgroundColor: 'rgba(6, 6, 10, 0.70)',
+  bar: {
+    height: 56,
+    backgroundColor: 'rgba(7,7,9,0.95)',
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
@@ -60,24 +70,37 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    maxWidth: 1400,
+    paddingHorizontal: 24,
+    maxWidth: 1440,
     alignSelf: 'center',
     width: '100%',
   },
-  logo: {
+  logoWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    minWidth: 110,
+  },
+  logoMark: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: Colors.brand,
+  },
+  logoText: {
     fontFamily: 'SpaceGrotesk-Bold',
-    fontSize: 18,
+    fontSize: 16,
     color: Colors.text,
+    letterSpacing: -0.3,
   },
   pills: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 4,
   },
   pill: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: 'transparent',
   },
@@ -91,16 +114,18 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
   },
   activePillText: {
-    color: '#ffedd5',
+    color: Colors.text,
   },
-  profile: {
+  avatarWrap: {
+    minWidth: 110,
     flexDirection: 'row',
+    justifyContent: 'flex-end',
     alignItems: 'center',
   },
   avatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     backgroundColor: Colors.brandDim,
     borderWidth: 1,
     borderColor: Colors.borderBrand,
@@ -109,7 +134,7 @@ const styles = StyleSheet.create({
   },
   avatarText: {
     fontFamily: 'Inter-SemiBold',
-    fontSize: 12,
+    fontSize: 11,
     color: Colors.brand,
   },
 });

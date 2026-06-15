@@ -7,37 +7,45 @@ interface WidgetShellProps {
   style?: ViewStyle;
   onPress?: () => void;
   padding?: number;
+  /** If true, renders with a slightly brighter elevated surface */
+  elevated?: boolean;
 }
 
-export function WidgetShell({ children, style, onPress, padding = 20 }: WidgetShellProps) {
-  const content = (
-    <View style={[styles.container, { padding }, style]}>
-      {children}
-    </View>
-  );
+export function WidgetShell({
+  children,
+  style,
+  onPress,
+  padding = 20,
+  elevated = false,
+}: WidgetShellProps) {
+  const containerStyle = [
+    styles.base,
+    elevated && styles.elevated,
+    { padding },
+    style,
+  ];
 
   if (onPress) {
     return (
-      <TouchableOpacity
-        onPress={onPress}
-        activeOpacity={0.85}
-        style={styles.touchable}
-      >
-        {content}
+      <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={containerStyle}>
+        {children}
       </TouchableOpacity>
     );
   }
 
-  return content;
+  return <View style={containerStyle}>{children}</View>;
 }
 
 const styles = StyleSheet.create({
-  container: {
+  base: {
     backgroundColor: Colors.surface,
     borderWidth: 1,
     borderColor: Colors.border,
     borderRadius: 20,
     overflow: 'hidden',
   },
-  touchable: {},
+  elevated: {
+    backgroundColor: Colors.elevated,
+    borderColor: Colors.borderStrong,
+  },
 });

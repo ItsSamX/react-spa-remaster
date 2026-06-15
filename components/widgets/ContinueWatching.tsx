@@ -9,37 +9,18 @@ import { useResponsive } from '@/hooks/useResponsive';
 export function ContinueWatching() {
   const { isMobile } = useResponsive();
 
-  if (isMobile) {
-    return (
-      <View>
-        <SectionHeader title="Continue Watching" actionLabel="See all" />
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <View style={styles.rail}>
-            {continueWatching.map((lecture) => (
-              <ContinueCard
-                key={lecture.id}
-                lecture={lecture}
-                onPress={() => {}}
-              />
-            ))}
-          </View>
-        </ScrollView>
-      </View>
-    );
-  }
-
   return (
-    <WidgetShell>
+    <WidgetShell padding={isMobile ? 16 : 20}>
       <SectionHeader title="Continue Watching" />
-      <View style={styles.grid}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.rail}
+      >
         {continueWatching.map((lecture) => (
-          <ContinueCard
-            key={lecture.id}
-            lecture={lecture}
-            onPress={() => {}}
-          />
+          <ContinueCard key={lecture.id} lecture={lecture} onPress={() => {}} />
         ))}
-      </View>
+      </ScrollView>
     </WidgetShell>
   );
 }
@@ -48,11 +29,6 @@ const styles = StyleSheet.create({
   rail: {
     flexDirection: 'row',
     gap: 12,
-    paddingRight: 20,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
+    paddingRight: 4,
   },
 });

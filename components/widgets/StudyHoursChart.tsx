@@ -5,31 +5,48 @@ import { SectionHeader } from '@/components/shared/SectionHeader';
 import { studyHours, dayLabels, todayIndex } from '@/lib/study-data';
 import { Colors } from '@/constants/Colors';
 
+const CHART_HEIGHT = 80;
+const TOTAL_HOURS = studyHours.reduce((a, b) => a + b, 0);
+
 export function StudyHoursChart() {
-  const maxHours = Math.max(...studyHours);
+  const maxH = Math.max(...studyHours);
 
   return (
     <WidgetShell>
-      <SectionHeader title="Study Hours" />
+      <SectionHeader
+        title="Study Hours"
+        right={
+          <Text style={styles.totalBadge}>{TOTAL_HOURS}h total</Text>
+        }
+      />
+
+      {/* Bar chart */}
       <View style={styles.chart}>
-        {studyHours.map((hours, i) => {
+        {studyHours.map((h, i) => {
           const isToday = i === todayIndex;
-          const heightPercent = (hours / maxHours) * 100;
+          const fillRatio = maxH > 0 ? h / maxH : 0;
+          const barHeight = Math.max(4, Math.round(fillRatio * CHART_HEIGHT));
+
           return (
-            <View key={i} style={styles.barContainer}>
-              <View style={styles.barWrapper}>
+            <View key={i} style={styles.col}>
+              {/* value tooltip on today */}
+              {isToday && (
+                <View style={styles.tooltip}>
+                  <Text style={styles.tooltipText}>{h}h</Text>
+                </View>
+              )}
+              <View style={styles.track}>
                 <View
                   style={[
-                    styles.bar,
+                    styles.fill,
                     {
-                      height: `${heightPercent}%` as any,
-                      backgroundColor: isToday ? Colors.brand : Colors.textSecondary,
-                      opacity: isToday ? 1 : 0.55,
+                      height: barHeight,
+                      backgroundColor: isToday ? Colors.brand : Colors.borderStrong,
                     },
                   ]}
                 />
               </View>
-              <Text style={styles.dayLabel}>{dayLabels[i]}</Text>
+              <Text style={[styles.day, isToday && styles.dayToday]}>{dayLabels[i]}</Text>
             </View>
           );
         })}
@@ -39,33 +56,54 @@ export function StudyHoursChart() {
 }
 
 const styles = StyleSheet.create({
+  totalBadge: {
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 11,
+    color: Colors.brand,
+  },
   chart: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'flex-end',
-    height: 90,
-    gap: 8,
+    gap: 6,
+    height: CHART_HEIGHT + 36,
   },
-  barContainer: {
+  col: {
     flex: 1,
     alignItems: 'center',
-    gap: 8,
+    justifyContent: 'flex-end',
+    gap: 6,
   },
-  barWrapper: {
+  tooltip: {
+    backgroundColor: Colors.brand,
+    borderRadius: 5,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    marginBottom: 2,
+  },
+  tooltipText: {
+    fontFamily: 'Inter-Bold',
+    fontSize: 9,
+    color: '#fff',
+  },
+  track: {
     width: '100%',
-    height: 70,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderRadius: 4,
+    height: CHART_HEIGHT,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderRadius: 6,
     justifyContent: 'flex-end',
     overflow: 'hidden',
   },
-  bar: {
+  fill: {
     width: '100%',
-    borderRadius: 4,
+    borderRadius: 6,
   },
-  dayLabel: {
+  day: {
     fontFamily: 'Inter-Medium',
     fontSize: 10,
-    color: Colors.textSecondary,
+    color: Colors.textMuted,
+  },
+  dayToday: {
+    color: Colors.brand,
+    fontFamily: 'Inter-Bold',
   },
 });

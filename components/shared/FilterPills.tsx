@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet, ScrollView, View } from 'react-native';
 import { Colors } from '@/constants/Colors';
 
 interface FilterPillsProps<T extends string> {
@@ -14,55 +14,58 @@ export function FilterPills<T extends string>({ items, active, onChange }: Filte
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.scrollContent}
+      style={styles.scroll}
     >
-      {items.map((item) => {
-        const isActive = item === active;
-        return (
-          <TouchableOpacity
-            key={item}
-            onPress={() => onChange(item)}
-            activeOpacity={0.7}
-            style={[
-              styles.pill,
-              isActive && styles.activePill,
-            ]}
-          >
-            <Text style={[
-              styles.pillText,
-              isActive && styles.activePillText,
-            ]}>
-              {item}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
+      <View style={styles.row}>
+        {items.map((item) => {
+          const isActive = item === active;
+          return (
+            <TouchableOpacity
+              key={item}
+              onPress={() => onChange(item)}
+              activeOpacity={0.7}
+              style={[styles.pill, isActive && styles.activePill]}
+            >
+              <Text style={[styles.pillText, isActive && styles.activePillText]}>
+                {item}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  scroll: {
+    marginBottom: 14,
+  },
   scrollContent: {
-    gap: 8,
-    paddingVertical: 4,
+    paddingBottom: 2,
+  },
+  row: {
+    flexDirection: 'row',
+    gap: 6,
   },
   pill: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 9999,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: Colors.border,
     backgroundColor: 'transparent',
   },
   activePill: {
-    backgroundColor: Colors.brandDim,
-    borderColor: Colors.borderBrand,
+    backgroundColor: Colors.elevated,
+    borderColor: Colors.borderStrong,
   },
   pillText: {
     fontFamily: 'Inter-Medium',
-    fontSize: 13,
+    fontSize: 12,
     color: Colors.textSecondary,
   },
   activePillText: {
-    color: Colors.brand,
+    color: Colors.text,
   },
 });

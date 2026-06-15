@@ -9,7 +9,7 @@ export default function TestsScreen() {
   const { isDesktop } = useResponsive();
 
   return (
-    <View style={styles.container}>
+    <View style={styles.root}>
       {isDesktop && <TopNav />}
       <ScrollView contentContainerStyle={[styles.content, isDesktop && styles.desktopContent]}>
         <TestsPanel />
@@ -19,7 +19,7 @@ export default function TestsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  root: {
     flex: 1,
     backgroundColor: Colors.bg,
   },
@@ -28,8 +28,8 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   desktopContent: {
-    padding: 20,
-    maxWidth: 1400,
+    padding: 24,
+    maxWidth: 1440,
     alignSelf: 'center',
     width: '100%',
   },

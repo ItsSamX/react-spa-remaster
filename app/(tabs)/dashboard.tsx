@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, ScrollView, Text, StyleSheet } from 'react-native';
+import { useResponsive } from '@/hooks/useResponsive';
 import { TopNav } from '@/components/layout/TopNav';
 import { HeroMetrics } from '@/components/widgets/HeroMetrics';
 import { ContinueWatching } from '@/components/widgets/ContinueWatching';
@@ -9,141 +10,114 @@ import { StreakTracker } from '@/components/widgets/StreakTracker';
 import { LeaderboardWidget } from '@/components/widgets/Leaderboard';
 import { TestsPanel } from '@/components/widgets/TestsPanel';
 import { NotesPanel } from '@/components/widgets/NotesPanel';
-import { WidgetShell } from '@/components/shared/WidgetShell';
-import { performance, studyMaterial } from '@/lib/study-data';
 import { Colors } from '@/constants/Colors';
 
 export default function DashboardScreen() {
+  const { isDesktop, isTablet } = useResponsive();
+
+  if (isDesktop) {
+    return (
+      <View style={styles.root}>
+        <TopNav />
+        <ScrollView contentContainerStyle={styles.desktopScroll}>
+
+          {/* Row 1: Hero metrics full-width */}
+          <HeroMetrics />
+
+          {/* Row 2: Continue Watching (2/3) | Streak + Study Hours (1/3) */}
+          <View style={styles.row}>
+            <View style={styles.flex2}>
+              <ContinueWatching />
+            </View>
+            <View style={[styles.flex1, styles.col]}>
+              <StreakTracker />
+              <StudyHoursChart />
+            </View>
+          </View>
+
+          {/* Row 3: Up Next | Leaderboard */}
+          <View style={styles.row}>
+            <View style={styles.flex1}><UpNext /></View>
+            <View style={styles.flex1}><LeaderboardWidget /></View>
+          </View>
+
+          {/* Row 4: Tests (2/3) | Notes (1/3) */}
+          <View style={styles.row}>
+            <View style={styles.flex2}><TestsPanel /></View>
+            <View style={styles.flex1}><NotesPanel /></View>
+          </View>
+
+        </ScrollView>
+      </View>
+    );
+  }
+
+  if (isTablet) {
+    return (
+      <View style={styles.root}>
+        <ScrollView contentContainerStyle={styles.tabletScroll}>
+          <HeroMetrics />
+          <View style={styles.row}>
+            <View style={styles.flex1}><StreakTracker /></View>
+            <View style={styles.flex1}><StudyHoursChart /></View>
+          </View>
+          <ContinueWatching />
+          <View style={styles.row}>
+            <View style={styles.flex1}><UpNext /></View>
+            <View style={styles.flex1}><LeaderboardWidget /></View>
+          </View>
+          <TestsPanel />
+          <NotesPanel />
+        </ScrollView>
+      </View>
+    );
+  }
+
+  // Mobile
   return (
-    <View style={styles.container}>
-      <TopNav />
-      <ScrollView contentContainerStyle={styles.content}>
-        <HeroMetrics />
-
-        <View style={styles.row}>
-          <View style={styles.half}>
-            <StreakTracker />
-          </View>
-          <View style={styles.half}>
-            <StudyHoursChart />
-          </View>
-        </View>
-
-        <ContinueWatching />
-
-        <View style={styles.row}>
-          <View style={styles.half}>
-            <UpNext />
-          </View>
-          <View style={styles.half}>
-            <LeaderboardWidget />
-          </View>
-        </View>
-
-        <TestsPanel />
-        <NotesPanel />
-
-        {/* Performance Stats */}
-        <WidgetShell>
-          <View style={styles.statsGrid}>
-            <View style={styles.stat}>
-              <Text style={styles.statValue}>{performance.avgScore}%</Text>
-              <Text style={styles.statLabel}>Avg Score</Text>
-            </View>
-            <View style={styles.stat}>
-              <Text style={styles.statValue}>{performance.avgTime}</Text>
-              <Text style={styles.statLabel}>Avg Time</Text>
-            </View>
-            <View style={styles.stat}>
-              <Text style={styles.statValue}>{performance.testsTaken}</Text>
-              <Text style={styles.statLabel}>Tests Taken</Text>
-            </View>
-          </View>
-        </WidgetShell>
-
-        {/* Study Material */}
-        <WidgetShell>
-          <Text style={styles.sectionTitle}>Study Material</Text>
-          <View style={styles.materialGrid}>
-            {studyMaterial.map((m) => (
-              <View key={m.subject} style={styles.materialCard}>
-                <Text style={styles.materialSubject}>{m.subject}</Text>
-                <Text style={styles.materialCount}>{m.pdfs} PDFs</Text>
-              </View>
-            ))}
-          </View>
-        </WidgetShell>
-      </ScrollView>
-    </View>
+    <ScrollView style={styles.root} contentContainerStyle={styles.mobileScroll}>
+      <HeroMetrics />
+      <StreakTracker />
+      <StudyHoursChart />
+      <ContinueWatching />
+      <UpNext />
+      <LeaderboardWidget />
+      <TestsPanel />
+      <NotesPanel />
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  root: {
     flex: 1,
     backgroundColor: Colors.bg,
   },
-  content: {
+  desktopScroll: {
     padding: 20,
-    maxWidth: 1400,
+    maxWidth: 1440,
     alignSelf: 'center',
     width: '100%',
-    gap: 16,
+    gap: 14,
+    paddingBottom: 48,
+  },
+  tabletScroll: {
+    padding: 16,
+    gap: 12,
     paddingBottom: 40,
+  },
+  mobileScroll: {
+    padding: 14,
+    gap: 12,
+    paddingBottom: 100,
   },
   row: {
     flexDirection: 'row',
-    gap: 16,
+    gap: 14,
   },
-  half: {
-    flex: 1,
+  col: {
+    gap: 14,
   },
-  statsGrid: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  stat: {
-    flex: 1,
-    alignItems: 'center',
-    padding: 12,
-  },
-  statValue: {
-    fontFamily: 'SpaceGrotesk-Bold',
-    fontSize: 24,
-    color: Colors.text,
-  },
-  statLabel: {
-    fontFamily: 'Inter-Medium',
-    fontSize: 12,
-    color: Colors.textSecondary,
-  },
-  sectionTitle: {
-    fontFamily: 'Inter-SemiBold',
-    fontSize: 12,
-    textTransform: 'uppercase',
-    color: Colors.textSecondary,
-    marginBottom: 12,
-    letterSpacing: 1.2,
-  },
-  materialGrid: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  materialCard: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: 'rgba(255,255,255,0.02)',
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  materialSubject: {
-    fontFamily: 'Inter-SemiBold',
-    fontSize: 14,
-    color: Colors.text,
-  },
-  materialCount: {
-    fontFamily: 'Inter-Medium',
-    fontSize: 12,
-    color: Colors.textSecondary,
-  },
+  flex1: { flex: 1 },
+  flex2: { flex: 2 },
 });

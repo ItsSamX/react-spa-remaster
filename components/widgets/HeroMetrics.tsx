@@ -1,54 +1,84 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { WidgetShell } from '@/components/shared/WidgetShell';
 import { heroStats } from '@/lib/study-data';
 import { Colors } from '@/constants/Colors';
 import { useResponsive } from '@/hooks/useResponsive';
 
-const metrics = [
-  { label: 'Completion', value: `${heroStats.completion}%`, color: Colors.brand },
-  { label: 'Lectures', value: String(heroStats.lectures), color: Colors.info },
-  { label: 'Hours Studied', value: `${heroStats.hours}h`, color: Colors.success },
-  { label: 'Tests', value: String(heroStats.tests), color: Colors.purple },
+type Metric = { label: string; value: string; sub: string; color: string };
+
+const metrics: Metric[] = [
+  { label: 'Completion',    value: `${heroStats.completion}%`, sub: 'of syllabus',   color: Colors.brand   },
+  { label: 'Lectures',      value: String(heroStats.lectures),  sub: 'total watched', color: Colors.info    },
+  { label: 'Hours Studied', value: `${heroStats.hours}h`,       sub: 'this month',    color: Colors.success },
+  { label: 'Tests Taken',   value: String(heroStats.tests),     sub: 'completed',     color: Colors.purple  },
 ];
 
 export function HeroMetrics() {
   const { isMobile } = useResponsive();
 
   return (
-    <View style={[styles.container, isMobile && styles.mobileContainer]}>
-      {metrics.map((metric) => (
-        <WidgetShell key={metric.label} style={styles.metricCard} padding={16}>
-          <Text style={[styles.value, { color: metric.color }]}>{metric.value}</Text>
-          <Text style={styles.label}>{metric.label}</Text>
-        </WidgetShell>
+    <View style={[styles.row, isMobile && styles.rowMobile]}>
+      {metrics.map((m) => (
+        <View key={m.label} style={[styles.card, isMobile && styles.cardMobile]}>
+          {/* accent bar */}
+          <View style={[styles.accentBar, { backgroundColor: m.color }]} />
+          <View style={styles.inner}>
+            <Text style={[styles.value, { color: m.color }]}>{m.value}</Text>
+            <Text style={styles.label}>{m.label}</Text>
+            <Text style={styles.sub}>{m.sub}</Text>
+          </View>
+        </View>
       ))}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  row: {
     flexDirection: 'row',
-    gap: 12,
+    gap: 10,
   },
-  mobileContainer: {
+  rowMobile: {
     flexWrap: 'wrap',
   },
-  metricCard: {
+  card: {
     flex: 1,
     minWidth: 120,
+    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: 20,
+    overflow: 'hidden',
+    flexDirection: 'row',
+  },
+  cardMobile: {
+    minWidth: '47%',
+    maxWidth: '50%',
+  },
+  accentBar: {
+    width: 3,
+    alignSelf: 'stretch',
+    opacity: 0.7,
+  },
+  inner: {
+    flex: 1,
+    padding: 16,
+    gap: 2,
   },
   value: {
     fontFamily: 'SpaceGrotesk-Bold',
-    fontSize: 28,
-    marginBottom: 4,
+    fontSize: 30,
+    lineHeight: 34,
   },
   label: {
-    fontFamily: 'Inter-Medium',
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 12,
+    color: Colors.text,
+    marginTop: 2,
+  },
+  sub: {
+    fontFamily: 'Inter-Regular',
     fontSize: 11,
-    color: Colors.textSecondary,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    color: Colors.textMuted,
   },
 });

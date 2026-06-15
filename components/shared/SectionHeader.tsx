@@ -4,17 +4,21 @@ import { Colors } from '@/constants/Colors';
 
 interface SectionHeaderProps {
   title: string;
-  actions?: ReactNode;
-  onAction?: () => void;
   actionLabel?: string;
+  onAction?: () => void;
+  right?: ReactNode;
+  /** Keep existing "actions" prop for backwards compat */
+  actions?: ReactNode;
 }
 
-export function SectionHeader({ title, actions, onAction, actionLabel }: SectionHeaderProps) {
+export function SectionHeader({ title, actionLabel, onAction, right, actions }: SectionHeaderProps) {
+  const rightNode = right ?? actions ?? null;
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
-      {actions ? (
-        <View style={styles.actions}>{actions}</View>
+      {rightNode ? (
+        <View style={styles.rightWrap}>{rightNode}</View>
       ) : actionLabel ? (
         <TouchableOpacity onPress={onAction} activeOpacity={0.7}>
           <Text style={styles.action}>{actionLabel}</Text>
@@ -29,18 +33,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: 14,
   },
   title: {
     fontFamily: 'Inter-SemiBold',
-    fontSize: 12,
+    fontSize: 11,
     textTransform: 'uppercase',
-    letterSpacing: 1.2,
+    letterSpacing: 1.4,
     color: Colors.textSecondary,
   },
-  actions: {
+  rightWrap: {
     flexDirection: 'row',
     gap: 8,
+    alignItems: 'center',
   },
   action: {
     fontFamily: 'Inter-Medium',

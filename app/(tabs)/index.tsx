@@ -11,67 +11,65 @@ import { LeaderboardWidget } from '@/components/widgets/Leaderboard';
 import { Colors } from '@/constants/Colors';
 
 export default function HomeScreen() {
-  const { isDesktop, isTablet } = useResponsive();
+  const { isDesktop, isTablet, isMobile } = useResponsive();
 
+  /* ── Desktop: full bento grid ── */
   if (isDesktop) {
     return (
-      <View style={styles.container}>
+      <View style={styles.root}>
         <TopNav />
-        <ScrollView contentContainerStyle={styles.desktopContent}>
-          <View style={styles.desktopGrid}>
-            {/* Row 1: Hero Metrics + Streak + Study Hours */}
-            <View style={styles.row}>
-              <View style={styles.heroSection}>
-                <HeroMetrics />
-              </View>
-              <View style={styles.sideWidgets}>
-                <StreakTracker />
-                <StudyHoursChart />
-              </View>
-            </View>
-
-            {/* Row 2: Continue Watching (full width) */}
-            <ContinueWatching />
-
-            {/* Row 3: Up Next + Leaderboard */}
-            <View style={styles.row}>
-              <View style={styles.half}>
-                <UpNext />
-              </View>
-              <View style={styles.half}>
-                <LeaderboardWidget />
-              </View>
-            </View>
-          </View>
-        </ScrollView>
-      </View>
-    );
-  }
-
-  if (isTablet) {
-    return (
-      <View style={styles.container}>
-        <ScrollView contentContainerStyle={styles.tabletContent}>
+        <ScrollView contentContainerStyle={styles.desktopScroll}>
+          {/* Row 1 – Hero metrics (full width) */}
           <HeroMetrics />
-          <ContinueWatching />
-          <View style={styles.tabletRow}>
-            <View style={styles.tabletHalf}>
-              <UpNext />
+
+          {/* Row 2 – Continue Watching + right column (Streak + StudyHours) */}
+          <View style={styles.row}>
+            <View style={styles.flex2}>
+              <ContinueWatching />
             </View>
-            <View style={styles.tabletHalf}>
+            <View style={[styles.flex1, styles.col]}>
+              <StreakTracker />
               <StudyHoursChart />
             </View>
           </View>
-          <LeaderboardWidget />
-          <StreakTracker />
+
+          {/* Row 3 – Up Next + Leaderboard */}
+          <View style={styles.row}>
+            <View style={styles.flex1}>
+              <UpNext />
+            </View>
+            <View style={styles.flex1}>
+              <LeaderboardWidget />
+            </View>
+          </View>
         </ScrollView>
       </View>
     );
   }
 
-  // Mobile
+  /* ── Tablet: 2-column ── */
+  if (isTablet) {
+    return (
+      <View style={styles.root}>
+        <ScrollView contentContainerStyle={styles.tabletScroll}>
+          <HeroMetrics />
+          <ContinueWatching />
+          <View style={styles.row}>
+            <View style={styles.flex1}><UpNext /></View>
+            <View style={styles.flex1}><StudyHoursChart /></View>
+          </View>
+          <View style={styles.row}>
+            <View style={styles.flex1}><LeaderboardWidget /></View>
+            <View style={styles.flex1}><StreakTracker /></View>
+          </View>
+        </ScrollView>
+      </View>
+    );
+  }
+
+  /* ── Mobile: vertical scroll ── */
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.mobileContent}>
+    <ScrollView style={styles.root} contentContainerStyle={styles.mobileScroll}>
       <HeroMetrics />
       <ContinueWatching />
       <UpNext />
@@ -83,47 +81,35 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  root: {
     flex: 1,
     backgroundColor: Colors.bg,
   },
-  desktopContent: {
+  desktopScroll: {
     padding: 20,
-    maxWidth: 1400,
+    maxWidth: 1440,
     alignSelf: 'center',
     width: '100%',
+    gap: 14,
+    paddingBottom: 48,
   },
-  desktopGrid: {
-    gap: 16,
+  tabletScroll: {
+    padding: 16,
+    gap: 12,
+    paddingBottom: 40,
+  },
+  mobileScroll: {
+    padding: 14,
+    gap: 12,
+    paddingBottom: 100,
   },
   row: {
     flexDirection: 'row',
-    gap: 16,
+    gap: 14,
   },
-  heroSection: {
-    flex: 2,
+  col: {
+    gap: 14,
   },
-  sideWidgets: {
-    flex: 1,
-    gap: 16,
-  },
-  half: {
-    flex: 1,
-  },
-  tabletContent: {
-    padding: 16,
-    gap: 16,
-  },
-  tabletRow: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  tabletHalf: {
-    flex: 1,
-  },
-  mobileContent: {
-    padding: 16,
-    gap: 16,
-    paddingBottom: 100,
-  },
+  flex1: { flex: 1 },
+  flex2: { flex: 2 },
 });
