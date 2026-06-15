@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { Colors } from '@/constants/Colors';
 
 interface FilterPillsProps<T extends string> {
