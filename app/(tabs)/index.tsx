@@ -1,72 +1,129 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { ScreenScaffold } from '@/components/shared/ScreenScaffold';
-import { heroStats, upNext } from '@/lib/study-data';
+import { View, ScrollView, StyleSheet } from 'react-native';
+import { useResponsive } from '@/hooks/useResponsive';
+import { TopNav } from '@/components/layout/TopNav';
+import { HeroMetrics } from '@/components/widgets/HeroMetrics';
+import { ContinueWatching } from '@/components/widgets/ContinueWatching';
+import { UpNext } from '@/components/widgets/UpNext';
+import { StudyHoursChart } from '@/components/widgets/StudyHoursChart';
+import { StreakTracker } from '@/components/widgets/StreakTracker';
+import { LeaderboardWidget } from '@/components/widgets/Leaderboard';
 import { Colors } from '@/constants/Colors';
 
 export default function HomeScreen() {
-  return (
-    <ScreenScaffold title="Good morning" subtitle="Let's continue your JEE prep">
-      <View style={styles.card}>
-        <Text style={styles.cardLabel}>COMPLETION</Text>
-        <Text style={styles.cardValue}>{heroStats.completion}%</Text>
-        <Text style={styles.cardMeta}>
-          {heroStats.lectures} lectures · {heroStats.hours}h studied · {heroStats.tests} tests
-        </Text>
+  const { isDesktop, isTablet } = useResponsive();
+
+  if (isDesktop) {
+    return (
+      <View style={styles.container}>
+        <TopNav />
+        <ScrollView contentContainerStyle={styles.desktopContent}>
+          <View style={styles.desktopGrid}>
+            {/* Row 1: Hero Metrics + Streak + Study Hours */}
+            <View style={styles.row}>
+              <View style={styles.heroSection}>
+                <HeroMetrics />
+              </View>
+              <View style={styles.sideWidgets}>
+                <StreakTracker />
+                <StudyHoursChart />
+              </View>
+            </View>
+
+            {/* Row 2: Continue Watching (full width) */}
+            <ContinueWatching />
+
+            {/* Row 3: Up Next + Leaderboard */}
+            <View style={styles.row}>
+              <View style={styles.half}>
+                <UpNext />
+              </View>
+              <View style={styles.half}>
+                <LeaderboardWidget />
+              </View>
+            </View>
+          </View>
+        </ScrollView>
       </View>
-      <Text style={styles.section}>UP NEXT</Text>
-      {upNext.map((item) => (
-        <View key={item.id} style={styles.row}>
-          <Text style={styles.rowTitle}>{item.title}</Text>
-          <Text style={styles.rowMeta}>
-            {item.teacher} · {item.time}
-          </Text>
-        </View>
-      ))}
-    </ScreenScaffold>
+    );
+  }
+
+  if (isTablet) {
+    return (
+      <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.tabletContent}>
+          <HeroMetrics />
+          <ContinueWatching />
+          <View style={styles.tabletRow}>
+            <View style={styles.tabletHalf}>
+              <UpNext />
+            </View>
+            <View style={styles.tabletHalf}>
+              <StudyHoursChart />
+            </View>
+          </View>
+          <LeaderboardWidget />
+          <StreakTracker />
+        </ScrollView>
+      </View>
+    );
+  }
+
+  // Mobile
+  return (
+    <ScrollView style={styles.container} contentContainerStyle={styles.mobileContent}>
+      <HeroMetrics />
+      <ContinueWatching />
+      <UpNext />
+      <StudyHoursChart />
+      <LeaderboardWidget />
+      <StreakTracker />
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    marginTop: 20,
+  container: {
+    flex: 1,
+    backgroundColor: Colors.bg,
+  },
+  desktopContent: {
     padding: 20,
-    borderRadius: 20,
-    backgroundColor: Colors.surface,
-    borderWidth: 1,
-    borderColor: Colors.border,
+    maxWidth: 1400,
+    alignSelf: 'center',
+    width: '100%',
   },
-  cardLabel: {
-    fontFamily: 'Inter-SemiBold',
-    fontSize: 11,
-    letterSpacing: 1,
-    color: Colors.textSecondary,
-  },
-  cardValue: {
-    fontFamily: 'SpaceGrotesk-Bold',
-    fontSize: 40,
-    color: Colors.brand,
-    marginTop: 4,
-  },
-  cardMeta: {
-    fontFamily: 'Inter-Regular',
-    fontSize: 13,
-    color: Colors.textSecondary,
-    marginTop: 4,
-  },
-  section: {
-    fontFamily: 'Inter-SemiBold',
-    fontSize: 11,
-    letterSpacing: 1.2,
-    color: Colors.textSecondary,
-    marginTop: 28,
-    marginBottom: 12,
+  desktopGrid: {
+    gap: 16,
   },
   row: {
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    flexDirection: 'row',
+    gap: 16,
   },
-  rowTitle: { fontFamily: 'Inter-SemiBold', fontSize: 15, color: Colors.text },
-  rowMeta: { fontFamily: 'Inter-Regular', fontSize: 13, color: Colors.textSecondary, marginTop: 2 },
+  heroSection: {
+    flex: 2,
+  },
+  sideWidgets: {
+    flex: 1,
+    gap: 16,
+  },
+  half: {
+    flex: 1,
+  },
+  tabletContent: {
+    padding: 16,
+    gap: 16,
+  },
+  tabletRow: {
+    flexDirection: 'row',
+    gap: 16,
+  },
+  tabletHalf: {
+    flex: 1,
+  },
+  mobileContent: {
+    padding: 16,
+    gap: 16,
+    paddingBottom: 100,
+  },
 });

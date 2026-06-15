@@ -19,7 +19,7 @@ export default function TabLayout() {
           height: 64,
           paddingBottom: 8,
           paddingTop: 8,
-          // Hide the native tab bar on desktop — the TopNav handles navigation.
+          // On desktop, screens render their own TopNav — hide the bottom bar.
           display: isDesktop ? 'none' : 'flex',
         },
         tabBarLabelStyle: {
@@ -61,7 +61,7 @@ export default function TabLayout() {
         options={{
           title: 'Dashboard',
           tabBarIcon: ({ color }) => <ChartBar size={22} color={color} />,
-          // Only reachable on desktop/web; hidden from the mobile tab bar.
+          // Dashboard is desktop-only; hide from mobile tab bar
           href: isDesktop ? '/dashboard' : null,
         }}
       />
