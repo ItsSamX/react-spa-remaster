@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "PW Client",
+    "slug": "pw-client",
+    "version": "1.0.0",
+    "scheme": "pwclient",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "backgroundColor": "#070709",
+      "resizeMode": "contain"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.pwclient.app"
+    },
+    "android": {
+      "package": "com.pwclient.app"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#070709",
+          "resizeMode": "contain"
+        }
+      ],
+      "expo-asset"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
