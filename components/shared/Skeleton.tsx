@@ -6,7 +6,6 @@ import Animated, {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import { Colors } from '@/constants/Colors';
 
 interface SkeletonProps {
   width: number | string;
@@ -23,7 +22,8 @@ export function Skeleton({ width, height, borderRadius = 8 }: SkeletonProps) {
       -1,
       true
     );
-  }, []);
+    // opacity is a Reanimated shared value (stable ref) — listed to satisfy exhaustive-deps
+  }, [opacity]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
