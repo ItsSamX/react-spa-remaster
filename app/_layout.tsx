@@ -21,6 +21,7 @@ import {
 } from '@expo-google-fonts/space-grotesk';
 import { Colors } from '@/constants/Colors';
 
+// PW Client — root layout
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function RootLayout() {
