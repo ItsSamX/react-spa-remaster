@@ -1,6 +1,9 @@
 import React from 'react';
 import { View, ScrollView, Text, StyleSheet } from 'react-native';
+import { FileText } from 'lucide-react-native';
 import { TopNav } from '@/components/layout/TopNav';
+import { ScreenHeader } from '@/components/shared/ScreenHeader';
+import { SectionHeader } from '@/components/shared/SectionHeader';
 import { HeroMetrics } from '@/components/widgets/HeroMetrics';
 import { ContinueWatching } from '@/components/widgets/ContinueWatching';
 import { UpNext } from '@/components/widgets/UpNext';
@@ -11,20 +14,32 @@ import { TestsPanel } from '@/components/widgets/TestsPanel';
 import { NotesPanel } from '@/components/widgets/NotesPanel';
 import { WidgetShell } from '@/components/shared/WidgetShell';
 import { performance, studyMaterial } from '@/lib/study-data';
-import { Colors } from '@/constants/Colors';
+import { SubjectColors, Colors } from '@/constants/Colors';
+
+const perfStats = [
+  { value: `${performance.avgScore}%`, label: 'Avg Score', color: Colors.success },
+  { value: performance.avgTime, label: 'Avg Time', color: Colors.info },
+  { value: String(performance.testsTaken), label: 'Tests Taken', color: Colors.purple },
+];
 
 export default function DashboardScreen() {
   return (
     <View style={styles.container}>
       <TopNav />
       <ScrollView contentContainerStyle={styles.content}>
+        <ScreenHeader
+          eyebrow="Overview"
+          title="Dashboard"
+          subtitle="Your complete learning snapshot at a glance"
+        />
+
         <HeroMetrics />
 
         <View style={styles.row}>
-          <View style={styles.half}>
+          <View style={styles.third}>
             <StreakTracker />
           </View>
-          <View style={styles.half}>
+          <View style={styles.twoThird}>
             <StudyHoursChart />
           </View>
         </View>
@@ -40,37 +55,44 @@ export default function DashboardScreen() {
           </View>
         </View>
 
-        <TestsPanel />
-        <NotesPanel />
-
         {/* Performance Stats */}
-        <WidgetShell>
+        <WidgetShell accent={Colors.success}>
+          <SectionHeader title="Performance" accent={Colors.success} />
           <View style={styles.statsGrid}>
-            <View style={styles.stat}>
-              <Text style={styles.statValue}>{performance.avgScore}%</Text>
-              <Text style={styles.statLabel}>Avg Score</Text>
-            </View>
-            <View style={styles.stat}>
-              <Text style={styles.statValue}>{performance.avgTime}</Text>
-              <Text style={styles.statLabel}>Avg Time</Text>
-            </View>
-            <View style={styles.stat}>
-              <Text style={styles.statValue}>{performance.testsTaken}</Text>
-              <Text style={styles.statLabel}>Tests Taken</Text>
-            </View>
+            {perfStats.map((s) => (
+              <View key={s.label} style={styles.stat}>
+                <Text style={[styles.statValue, { color: s.color }]}>{s.value}</Text>
+                <Text style={styles.statLabel}>{s.label}</Text>
+              </View>
+            ))}
           </View>
         </WidgetShell>
 
+        <View style={styles.row}>
+          <View style={styles.half}>
+            <TestsPanel />
+          </View>
+          <View style={styles.half}>
+            <NotesPanel />
+          </View>
+        </View>
+
         {/* Study Material */}
-        <WidgetShell>
-          <Text style={styles.sectionTitle}>Study Material</Text>
+        <WidgetShell accent={Colors.brand}>
+          <SectionHeader title="Study Material" />
           <View style={styles.materialGrid}>
-            {studyMaterial.map((m) => (
-              <View key={m.subject} style={styles.materialCard}>
-                <Text style={styles.materialSubject}>{m.subject}</Text>
-                <Text style={styles.materialCount}>{m.pdfs} PDFs</Text>
-              </View>
-            ))}
+            {studyMaterial.map((m) => {
+              const color = SubjectColors[m.subject];
+              return (
+                <View key={m.subject} style={styles.materialCard}>
+                  <View style={[styles.materialIcon, { backgroundColor: color + '22', borderColor: color + '40' }]}>
+                    <FileText size={18} color={color} strokeWidth={2.2} />
+                  </View>
+                  <Text style={styles.materialSubject}>{m.subject}</Text>
+                  <Text style={styles.materialCount}>{m.pdfs} PDFs</Text>
+                </View>
+              );
+            })}
           </View>
         </WidgetShell>
       </ScrollView>
@@ -84,19 +106,26 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.bg,
   },
   content: {
-    padding: 20,
+    padding: 24,
     maxWidth: 1400,
     alignSelf: 'center',
     width: '100%',
-    gap: 16,
-    paddingBottom: 40,
+    gap: 20,
+    paddingBottom: 48,
   },
   row: {
     flexDirection: 'row',
-    gap: 16,
+    gap: 20,
+    alignItems: 'flex-start',
   },
   half: {
     flex: 1,
+  },
+  third: {
+    flex: 1,
+  },
+  twoThird: {
+    flex: 2,
   },
   statsGrid: {
     flexDirection: 'row',
@@ -105,39 +134,48 @@ const styles = StyleSheet.create({
   stat: {
     flex: 1,
     alignItems: 'center',
-    padding: 12,
+    paddingVertical: 16,
+    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: 16,
+    gap: 4,
   },
   statValue: {
     fontFamily: 'SpaceGrotesk-Bold',
-    fontSize: 24,
-    color: Colors.text,
+    fontSize: 28,
+    letterSpacing: -0.5,
   },
   statLabel: {
     fontFamily: 'Inter-Medium',
     fontSize: 12,
     color: Colors.textSecondary,
   },
-  sectionTitle: {
-    fontFamily: 'Inter-SemiBold',
-    fontSize: 12,
-    textTransform: 'uppercase',
-    color: Colors.textSecondary,
-    marginBottom: 12,
-    letterSpacing: 1.2,
-  },
   materialGrid: {
     flexDirection: 'row',
-    gap: 12,
+    gap: 16,
   },
   materialCard: {
     flex: 1,
-    padding: 16,
-    backgroundColor: 'rgba(255,255,255,0.02)',
-    borderRadius: 12,
+    paddingVertical: 20,
+    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: 16,
     alignItems: 'center',
+    gap: 8,
+  },
+  materialIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 4,
   },
   materialSubject: {
-    fontFamily: 'Inter-SemiBold',
+    fontFamily: 'Inter-Bold',
     fontSize: 14,
     color: Colors.text,
   },

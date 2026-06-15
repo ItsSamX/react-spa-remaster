@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "PW Client",
-    "slug": "pw-client",
+    "name": "StudyHub",
+    "slug": "studyhub",
     "version": "1.0.0",
     "scheme": "pwclient",
     "orientation": "portrait",

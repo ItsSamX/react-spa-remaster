@@ -47,22 +47,22 @@ const styles = StyleSheet.create({
   },
   pill: {
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingVertical: 9,
     borderRadius: 9999,
     borderWidth: 1,
     borderColor: Colors.border,
-    backgroundColor: 'transparent',
+    backgroundColor: Colors.surface,
   },
   activePill: {
-    backgroundColor: Colors.brandDim,
-    borderColor: Colors.borderBrand,
+    backgroundColor: Colors.brand,
+    borderColor: Colors.brand,
   },
   pillText: {
-    fontFamily: 'Inter-Medium',
+    fontFamily: 'Inter-SemiBold',
     fontSize: 13,
     color: Colors.textSecondary,
   },
   activePillText: {
-    color: Colors.brand,
+    color: '#1a0a00',
   },
 });

@@ -1,34 +1,44 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { FileText, Calendar } from 'lucide-react-native';
 import { WidgetShell } from '@/components/shared/WidgetShell';
 import { SectionHeader } from '@/components/shared/SectionHeader';
 import { FilterPills } from '@/components/shared/FilterPills';
 import { SubjectPill } from '@/components/shared/SubjectPill';
 import { seedNotes, subjectFilters, SubjectKey } from '@/lib/study-data';
-import { Colors } from '@/constants/Colors';
+import { SubjectColors, Colors } from '@/constants/Colors';
 
 export function NotesPanel() {
   const [filter, setFilter] = useState<SubjectKey>('All');
 
-  const filtered = filter === 'All'
-    ? seedNotes
-    : seedNotes.filter((n) => n.subject === filter);
+  const filtered = filter === 'All' ? seedNotes : seedNotes.filter((n) => n.subject === filter);
 
   return (
-    <WidgetShell>
-      <SectionHeader title="Notes" />
+    <WidgetShell accent={Colors.purple}>
+      <SectionHeader title="My Notes" accent={Colors.purple} actionLabel="New note" />
       <FilterPills items={subjectFilters} active={filter} onChange={setFilter} />
       <View style={styles.list}>
-        {filtered.map((note) => (
-          <View key={note.id} style={styles.noteCard}>
-            <View style={styles.noteHeader}>
-              <Text style={styles.noteTitle} numberOfLines={1}>{note.title}</Text>
-              <SubjectPill subject={note.subject} />
-            </View>
-            <Text style={styles.preview} numberOfLines={2}>{note.preview}</Text>
-            <Text style={styles.date}>{note.date}</Text>
-          </View>
-        ))}
+        {filtered.map((note) => {
+          const color = SubjectColors[note.subject];
+          return (
+            <TouchableOpacity key={note.id} activeOpacity={0.85} style={styles.noteCard}>
+              <View style={[styles.iconWrap, { backgroundColor: color + '22', borderColor: color + '40' }]}>
+                <FileText size={18} color={color} strokeWidth={2.2} />
+              </View>
+              <View style={styles.body}>
+                <View style={styles.noteHeader}>
+                  <Text style={styles.noteTitle} numberOfLines={1}>{note.title}</Text>
+                  <SubjectPill subject={note.subject} />
+                </View>
+                <Text style={styles.preview} numberOfLines={2}>{note.preview}</Text>
+                <View style={styles.dateRow}>
+                  <Calendar size={12} color={Colors.textMuted} />
+                  <Text style={styles.date}>{note.date}</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          );
+        })}
       </View>
     </WidgetShell>
   );
@@ -36,14 +46,29 @@ export function NotesPanel() {
 
 const styles = StyleSheet.create({
   list: {
-    gap: 8,
-    marginTop: 12,
+    gap: 12,
+    marginTop: 16,
   },
   noteCard: {
-    padding: 12,
-    backgroundColor: 'rgba(255,255,255,0.02)',
+    flexDirection: 'row',
+    gap: 14,
+    padding: 16,
+    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: 16,
+  },
+  iconWrap: {
+    width: 44,
+    height: 44,
     borderRadius: 12,
-    gap: 6,
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  body: {
+    flex: 1,
+    gap: 7,
   },
   noteHeader: {
     flexDirection: 'row',
@@ -52,8 +77,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   noteTitle: {
-    fontFamily: 'Inter-SemiBold',
-    fontSize: 14,
+    fontFamily: 'Inter-Bold',
+    fontSize: 15,
     color: Colors.text,
     flex: 1,
   },
@@ -61,7 +86,13 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     fontSize: 13,
     color: Colors.textSecondary,
-    lineHeight: 18,
+    lineHeight: 19,
+  },
+  dateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    marginTop: 2,
   },
   date: {
     fontFamily: 'Inter-Medium',

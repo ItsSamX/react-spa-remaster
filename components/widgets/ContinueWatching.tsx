@@ -5,6 +5,7 @@ import { SectionHeader } from '@/components/shared/SectionHeader';
 import { ContinueCard } from '@/components/cards/ContinueCard';
 import { continueWatching } from '@/lib/study-data';
 import { useResponsive } from '@/hooks/useResponsive';
+import { Colors } from '@/constants/Colors';
 
 export function ContinueWatching() {
   const { isMobile } = useResponsive();
@@ -16,11 +17,9 @@ export function ContinueWatching() {
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={styles.rail}>
             {continueWatching.map((lecture) => (
-              <ContinueCard
-                key={lecture.id}
-                lecture={lecture}
-                onPress={() => {}}
-              />
+              <View key={lecture.id} style={styles.railItem}>
+                <ContinueCard lecture={lecture} onPress={() => {}} />
+              </View>
             ))}
           </View>
         </ScrollView>
@@ -29,15 +28,13 @@ export function ContinueWatching() {
   }
 
   return (
-    <WidgetShell>
-      <SectionHeader title="Continue Watching" />
+    <WidgetShell accent={Colors.brand}>
+      <SectionHeader title="Continue Watching" actionLabel="See all" />
       <View style={styles.grid}>
         {continueWatching.map((lecture) => (
-          <ContinueCard
-            key={lecture.id}
-            lecture={lecture}
-            onPress={() => {}}
-          />
+          <View key={lecture.id} style={styles.gridItem}>
+            <ContinueCard lecture={lecture} onPress={() => {}} />
+          </View>
         ))}
       </View>
     </WidgetShell>
@@ -47,12 +44,17 @@ export function ContinueWatching() {
 const styles = StyleSheet.create({
   rail: {
     flexDirection: 'row',
-    gap: 12,
-    paddingRight: 20,
+    gap: 14,
+    paddingRight: 16,
+  },
+  railItem: {
+    width: 210,
   },
   grid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
+    gap: 16,
+  },
+  gridItem: {
+    flex: 1,
   },
 });
