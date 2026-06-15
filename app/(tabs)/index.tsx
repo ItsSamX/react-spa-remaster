@@ -2,6 +2,7 @@ import React from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { useResponsive } from '@/hooks/useResponsive';
 import { TopNav } from '@/components/layout/TopNav';
+import { HomeHero } from '@/components/widgets/HomeHero';
 import { HeroMetrics } from '@/components/widgets/HeroMetrics';
 import { ContinueWatching } from '@/components/widgets/ContinueWatching';
 import { UpNext } from '@/components/widgets/UpNext';
@@ -18,27 +19,17 @@ export default function HomeScreen() {
       <View style={styles.container}>
         <TopNav />
         <ScrollView contentContainerStyle={styles.desktopContent}>
-          <View style={styles.desktopGrid}>
-            {/* Row 1: Hero Metrics + Streak + Study Hours */}
+          <View style={styles.stack}>
+            <HomeHero />
+            <HeroMetrics />
             <View style={styles.row}>
-              <View style={styles.heroSection}>
-                <HeroMetrics />
-              </View>
-              <View style={styles.sideWidgets}>
-                <StreakTracker />
-                <StudyHoursChart />
-              </View>
-            </View>
-
-            {/* Row 2: Continue Watching (full width) */}
-            <ContinueWatching />
-
-            {/* Row 3: Up Next + Leaderboard */}
-            <View style={styles.row}>
-              <View style={styles.half}>
+              <View style={styles.mainCol}>
+                <ContinueWatching />
                 <UpNext />
               </View>
-              <View style={styles.half}>
+              <View style={styles.sideCol}>
+                <StreakTracker />
+                <StudyHoursChart />
                 <LeaderboardWidget />
               </View>
             </View>
@@ -52,6 +43,7 @@ export default function HomeScreen() {
     return (
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.tabletContent}>
+          <HomeHero />
           <HeroMetrics />
           <ContinueWatching />
           <View style={styles.tabletRow}>
@@ -62,8 +54,8 @@ export default function HomeScreen() {
               <StudyHoursChart />
             </View>
           </View>
-          <LeaderboardWidget />
           <StreakTracker />
+          <LeaderboardWidget />
         </ScrollView>
       </View>
     );
@@ -72,12 +64,13 @@ export default function HomeScreen() {
   // Mobile
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.mobileContent}>
+      <HomeHero />
       <HeroMetrics />
       <ContinueWatching />
+      <StreakTracker />
       <UpNext />
       <StudyHoursChart />
       <LeaderboardWidget />
-      <StreakTracker />
     </ScrollView>
   );
 }
@@ -88,42 +81,41 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.bg,
   },
   desktopContent: {
-    padding: 20,
+    padding: 24,
     maxWidth: 1400,
     alignSelf: 'center',
     width: '100%',
   },
-  desktopGrid: {
-    gap: 16,
+  stack: {
+    gap: 20,
   },
   row: {
     flexDirection: 'row',
-    gap: 16,
+    gap: 20,
+    alignItems: 'flex-start',
   },
-  heroSection: {
+  mainCol: {
     flex: 2,
+    gap: 20,
   },
-  sideWidgets: {
+  sideCol: {
     flex: 1,
-    gap: 16,
-  },
-  half: {
-    flex: 1,
+    gap: 20,
   },
   tabletContent: {
-    padding: 16,
-    gap: 16,
+    padding: 20,
+    gap: 18,
   },
   tabletRow: {
     flexDirection: 'row',
-    gap: 16,
+    gap: 18,
   },
   tabletHalf: {
     flex: 1,
   },
   mobileContent: {
     padding: 16,
-    gap: 16,
+    gap: 18,
     paddingBottom: 100,
   },
 });
